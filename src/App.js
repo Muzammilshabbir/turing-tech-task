@@ -1,24 +1,34 @@
-import logo from './logo.svg';
+import Login from "./containers/Login"
+import Auth from "./containers/Auth"
+import Dashboard from "./containers/Dashboard"
+import ShowCall from "./containers/ShowCall"
+import Layout from "./components/Layout"
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap.css';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <ToastContainer />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Auth />}>
+            <Route index element={<Login />} />
+            <Route path='login' element={<Login />} />
+          </Route>
+
+          <Route path="/" element={<Layout />}>
+            <Route path='dashboard' element={<Dashboard />} />
+            <Route path='call/:id' element={<ShowCall/>} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 }
 
