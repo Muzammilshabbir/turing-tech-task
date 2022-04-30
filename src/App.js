@@ -10,7 +10,6 @@ import 'bootstrap/dist/css/bootstrap.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loader from './components/Loader'
-// import Home from './components/Home'
 import './App.css';
 import { Axios } from './services/Axios'
 
