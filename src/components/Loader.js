@@ -1,5 +1,4 @@
 import React from 'react'
-import './loader.css'
 import { useSelector } from 'react-redux'
 
 export default function Loader() {

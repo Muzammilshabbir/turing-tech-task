@@ -3,7 +3,6 @@ import { Axios } from '../services/Axios'
 import { useNavigate } from 'react-router-dom'
 import { setLoading } from '../store/loaderSlice'
 import { useDispatch } from 'react-redux'
-import "./login.css"
 export default function Login() {
 
     const dispatch = useDispatch()
