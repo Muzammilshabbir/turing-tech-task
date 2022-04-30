@@ -1,50 +1,54 @@
 import { useEffect, useState,useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchCalls,fetchSingleCall,archiveCall } from '../store/callSlice'
+import { fetchCalls,archiveCall } from '../store/callSlice'
 import { Table, InputGroup } from "react-bootstrap"
 import ReactPaginate from 'react-paginate';
-import { ArrowRight } from 'react-bootstrap-icons';
-import ShowCall from './ShowCall'
 import {Link} from 'react-router-dom'
+import Pusher from 'pusher-js'
 
 export default function Dashboard() {
 
   const [pageCount, setPageCount] = useState(0);
-  const [loading, setLoading] = useState(false);
 
   const limit = 10;
   const dispatch = useDispatch()
 
   const calls = useSelector(state => state.calls.calls)
 
-  console.log('state :>> ', calls);
   useEffect(() => {
 
-    setLoading(true)
-    dispatch(fetchCalls())
-    setLoading(false)
+    calls?.length < 1 && dispatch(fetchCalls())
     setPageCount(Math.ceil(calls.totalCount / limit));
 
-  }, [calls.totalCount, dispatch])
+  }, [calls.totalCount, dispatch, calls?.length])
 
+  useEffect(()=>{
+    
+    const pusher = new Pusher('d44e3d910d38a928e0be',{
+      cluster: 'eu',
+      authEndpoint: "https://frontend-test-api.aircall.io/pusher/auth",
+    })
+
+    const channel = pusher.subscribe('private-aircall');
+    
+    channel.bind('update-call', function(data){
+        console.log('channel data',data)
+    })  
+  },[])
 
   const handlePageClick = async (data) => {
-
     let offset = data.selected;
-
+    
     if (offset > 0) {
-
       offset = data.selected * 10;
     }
     dispatch(fetchCalls(offset));
-
   }
 
   const handleArchive = (id) =>{
       dispatch(archiveCall(id))
   }
   
-
   return (
     <div>
 
@@ -75,16 +79,16 @@ export default function Dashboard() {
                 <td>{call.call_type}</td>
                 <td>{call.via}</td>
                 <td>
-                <InputGroup.Text>
+                <InputGroup.Text >
                 <Link to={`/call/${call.id}`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16"  height="16" fill="currentColor" className="bi bi-eye-fill" viewBox="0 0 16 16">
                     <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
                     <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
                   </svg>
                  
                   </Link>
-                  <InputGroup onClick={() => handleArchive(call.id)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="m-2" width="16" height="16" fill="currentColor" class="bi bi-archive" viewBox="0 0 16 16">
+                  <InputGroup onClick={() => handleArchive(call.id)} title="Archive" className="mt-1 mx-2 archive">
+                    <svg xmlns="http://www.w3.org/2000/svg"  width="16" height="16" fill="currentColor" className="bi bi-archive" viewBox="0 0 16 16">
                       <path d="M0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 12.5V5a1 1 0 0 1-1-1V2zm2 3v7.5A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5V5H2zm13-3H1v2h14V2zM5 7.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
                     </svg>
                   </InputGroup>

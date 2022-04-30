@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react'
 import { useNavigate, Outlet,Link } from 'react-router-dom'
-import { Navbar, Container, Nav } from 'react-bootstrap'
-import Loader from './Loader'
+import { Navbar, Container, Nav,NavDropdown } from 'react-bootstrap'
+import { useDispatch } from 'react-redux'
+import { deleteCalls } from '../store/callSlice'
 
 export default function Layout() {
 
+    const dispatch = useDispatch()
     const token = localStorage.getItem('_token')
 
     const navigate = useNavigate()
@@ -17,17 +19,28 @@ export default function Layout() {
 
     }, [navigate, token])
 
+    const handleLogout = () => {
+        localStorage.clear();
+        dispatch(deleteCalls([]))
+
+        navigate("/")
+    }
     return (
         <div>
-            <Navbar bg="dark" variant="dark">
+            <Navbar bg="primary" variant="dark">
                 <Container>
                     <Navbar.Brand>Welcome</Navbar.Brand>
                     <Nav className="me-auto">
-                        <Nav.Link> <Link to="/dashboard"> Dashboard </Link></Nav.Link>
+                        <Nav.Link> <Link to="/dashboard" className="linkTag"> Dashboard </Link></Nav.Link>
                     </Nav>
+
+                    <Nav>
+                        <Nav.Link onClick={handleLogout} className="linkTag"> <Link to="/dashboard" className="linkTag"> Logout </Link></Nav.Link>
+                    </Nav>
+
                 </Container>
             </Navbar>
-            <Loader/>
+            
 
             <Outlet />
         </div>

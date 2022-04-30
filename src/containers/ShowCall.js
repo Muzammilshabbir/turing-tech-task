@@ -3,8 +3,6 @@ import {useParams} from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchSingleCall,addNote } from '../store/callSlice'
 import {Card, Button,ListGroup , Container,Modal,Form} from 'react-bootstrap'
-import {Axios} from '../services/Axios'
-import { setLoading } from '../store/loaderSlice'
 
 export default function ShowCall() {
 
@@ -15,21 +13,17 @@ const [note, setNote] = useState('');
 
 useEffect(()=>{
     dispatch(fetchSingleCall(params.id))
-},[params.id])
-
-const ddd = useSelector(state=> state)
+},[params.id,dispatch])
 
 const call = useSelector(state=> state.calls.call)
 
 const handleNote = async() =>{
-
     dispatch(addNote({id:params.id, content:note}))
-
 }
 
   return (
     <Container style={{ width: '350px' }}> 
-        <Card style={{ width: '18rem' }}>
+        <Card style={{ width: '21rem' }}>
         {/* <Card.Img variant="top" src="holder.js/100px180" /> */}
             <Card.Body>
                 <Card.Title>Call Detail</Card.Title>

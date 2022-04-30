@@ -1,7 +1,6 @@
 import React from 'react'
 import './loader.css'
-import { useDispatch, useSelector } from 'react-redux'
-import {Spinner} from 'react-bootstrap'
+import { useSelector } from 'react-redux'
 
 export default function Loader() {
 

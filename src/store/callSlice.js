@@ -26,8 +26,6 @@ export const fetchSingleCall = createAsyncThunk('getByID', async (id, thunk) => 
     const { data } = await Axios.get(`calls/${id}`)
 
     thunk.dispatch(setLoading(false))
-
-    console.log('fetch single cal data',data)
     return data
 })
 
@@ -46,7 +44,8 @@ export const archiveCall = createAsyncThunk('archiveCall', async (id, thunk) => 
 
     thunk.dispatch(setLoading(true))
     const { data } = await Axios.put(`calls/${id}/archive`)
- 
+
+    thunk.dispatch(fetchCalls())
     thunk.dispatch(setLoading(false))
     return data
 })
@@ -55,7 +54,11 @@ export const archiveCall = createAsyncThunk('archiveCall', async (id, thunk) => 
 const callSlice = createSlice({
     name: 'calls',
     initialState: initialState,
-    reducer: {},
+    reducers: {
+        deleteCalls: (state, action) => {
+            state.calls = action.payload
+        }
+    },
     extraReducers: {
         [fetchCalls.fulfilled]: (state, action) => {
             state.calls = action.payload;
@@ -65,8 +68,13 @@ const callSlice = createSlice({
         },
         [addNote.fulfilled]: (state, action) => {
             return {...state, call:action.payload};
+        },
+        [archiveCall.fulfilled]: (state, action) => {
+            return {...state, calls:action.payload};
         }
     }
 })
+
+export const { deleteCalls } = callSlice.actions
 
 export default callSlice.reducer
