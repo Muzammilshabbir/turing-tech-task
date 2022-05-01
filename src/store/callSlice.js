@@ -9,59 +9,71 @@ const initialState = {
 }
 
 export const fetchCalls = createAsyncThunk('calls', async (offset, thunk) => {
-
-    let url = 'calls'
-    if (offset) {
-        url = `calls/?offset=${offset}&limit=10`
+    try {
+        let url = 'calls'
+        if (offset) {
+            url = `calls/?offset=${offset}&limit=10`
+        }
+        thunk.dispatch(setLoading(true))
+        const { data } = await Axios.get(url)
+        thunk.dispatch(setLoading(false))
+        return data
+    } catch (error) {
+        console.log(error)
     }
-    thunk.dispatch(setLoading(true))
-    const { data } = await Axios.get(url)
-    thunk.dispatch(setLoading(false))
-    return data
+
 })
 
 export const fetchSingleCall = createAsyncThunk('getByID', async (id, thunk) => {
+    try {
+        thunk.dispatch(setLoading(true))
+        const { data } = await Axios.get(`calls/${id}`)
 
-    thunk.dispatch(setLoading(true))
-    const { data } = await Axios.get(`calls/${id}`)
-
-    thunk.dispatch(setLoading(false))
-    return data
+        thunk.dispatch(setLoading(false))
+        return data
+    } catch (error) {
+        console.log(error)
+    }
 })
 
 export const addNote = createAsyncThunk('addNote', async (value, thunk) => {
+    try {
+        thunk.dispatch(setLoading(true))
+        const { data } = await Axios.post(`calls/${value.id}/note`, { content: value.content })
 
-    thunk.dispatch(setLoading(true))
-    const { data } = await Axios.post(`calls/${value.id}/note`,{content:value.content})
- 
-    toast('Note added successfully')
+        toast('Note added successfully')
 
-    thunk.dispatch(setLoading(false))
-    return data
+        thunk.dispatch(setLoading(false))
+        return data
+    } catch (error) {
+        console.log(error)
+    }
 })
 
 export const archiveCall = createAsyncThunk('archiveCall', async (id, thunk) => {
 
-    thunk.dispatch(setLoading(true))
-    const { data } = await Axios.put(`calls/${id}/archive`)
+    try {
+        thunk.dispatch(setLoading(true))
+        await Axios.put(`calls/${id}/archive`)
 
-    thunk.dispatch(setLoading(false))
-    console.log('thunk.getState().calls.calls.nodes :>> ', thunk.getState().calls.calls.nodes);
-    const calls = JSON.parse(JSON.stringify(thunk.getState().calls.calls.nodes))
+        thunk.dispatch(setLoading(false))
+        const calls = [...thunk.getState().calls.calls.nodes]
 
-    const callIndex = thunk.getState().calls?.calls?.nodes.findIndex((call) => {
-        return call.id === id
-    })
+        const callIndex = thunk.getState().calls?.calls?.nodes.findIndex((call) => {
+            return call.id === id
+        })
 
-    const call = { ...thunk.getState().calls?.calls?.nodes[callIndex]}
+        const call = { ...thunk.getState().calls?.calls?.nodes[callIndex] }
 
-    call.is_archived ? call.is_archived = false : call.is_archived = true
+        call.is_archived ? call.is_archived = false : call.is_archived = true
 
-    calls[callIndex] = call 
-    return calls
+        calls[callIndex] = call
+        return calls
 
+    } catch (error) {
+        console.log(error)
+    }
 })
-
 
 const callSlice = createSlice({
     name: 'calls',
@@ -76,10 +88,10 @@ const callSlice = createSlice({
             state.calls = action.payload;
         },
         [fetchSingleCall.fulfilled]: (state, action) => {
-            return {...state, call:action.payload};
+            return { ...state, call: action.payload };
         },
         [addNote.fulfilled]: (state, action) => {
-            return {...state, call:action.payload};
+            return { ...state, call: action.payload };
         },
         [archiveCall.fulfilled]: (state, action) => {
             state.calls.nodes = action.payload;
