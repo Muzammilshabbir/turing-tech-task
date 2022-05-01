@@ -12,8 +12,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import Loader from './components/Loader'
 import './App.css';
 import { Axios } from './services/Axios'
+import { setLoading } from './store/loaderSlice'
+import { useDispatch } from 'react-redux'
 
 function App() {
+  const dispatch = useDispatch()
+
+  dispatch(setLoading(false))
 
   const intervalRef = useRef();
 

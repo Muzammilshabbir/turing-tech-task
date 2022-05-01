@@ -45,9 +45,21 @@ export const archiveCall = createAsyncThunk('archiveCall', async (id, thunk) => 
     thunk.dispatch(setLoading(true))
     const { data } = await Axios.put(`calls/${id}/archive`)
 
-    thunk.dispatch(fetchCalls())
     thunk.dispatch(setLoading(false))
-    return data
+    console.log('thunk.getState().calls.calls.nodes :>> ', thunk.getState().calls.calls.nodes);
+    const calls = JSON.parse(JSON.stringify(thunk.getState().calls.calls.nodes))
+
+    const callIndex = thunk.getState().calls?.calls?.nodes.findIndex((call) => {
+        return call.id === id
+    })
+
+    const call = { ...thunk.getState().calls?.calls?.nodes[callIndex]}
+
+    call.is_archived ? call.is_archived = false : call.is_archived = true
+
+    calls[callIndex] = call 
+    return calls
+
 })
 
 
@@ -70,7 +82,7 @@ const callSlice = createSlice({
             return {...state, call:action.payload};
         },
         [archiveCall.fulfilled]: (state, action) => {
-            return {...state, calls:action.payload};
+            state.calls.nodes = action.payload;
         }
     }
 })
